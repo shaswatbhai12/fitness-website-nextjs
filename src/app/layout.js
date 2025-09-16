@@ -3,7 +3,7 @@ export const metadata = {
   title: "Smart Fitness Planner 🏋️",   // Title on browser tab
   description: "Personalized diet & workout planner",
   icons: {
-    icon: "/favicon.ico", // place favicon inside /public
+    icon: "/favicon", // place favicon inside /public
   },
 };
 
