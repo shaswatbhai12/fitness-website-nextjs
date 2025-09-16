@@ -1,103 +1,152 @@
-import Image from "next/image";
+"use client";
+import { useState } from "react";
+import ResultCard from "./components/ResultCard";
+import { AlignCenter } from "lucide-react";
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.js
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [name, setName] = useState("");
+  const [age, setAge] = useState("");
+  const [height, setHeight] = useState("");
+  const [weight, setWeight] = useState("");
+  const [gender, setGender] = useState("Male");
+  const [activity, setActivity] = useState("Moderately Active");
+  const [goal, setGoal] = useState("Lose Weight");
+  const [result, setResult] = useState(null);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+  const handleGeneratePlan = async () => {
+    if (!age || !height || !weight) {
+      alert("Please fill all fields correctly!");
+      return;
+    }
+
+    const heightM = height / 100;
+    const bmi = (weight / (heightM * heightM)).toFixed(1);
+
+    let category = "";
+    if (bmi < 18.5) category = "Underweight";
+    else if (bmi < 24.9) category = "Normal weight";
+    else if (bmi < 29.9) category = "Overweight";
+    else category = "Obese";
+
+    // BMR calculation
+    let bmr =
+      gender === "Male"
+        ? 10 * weight + 6.25 * height - 5 * age + 5
+        : 10 * weight + 6.25 * height - 5 * age - 161;
+
+    // Activity multiplier
+    const activityLevels = {
+      Sedentary: 1.2,
+      "Lightly Active": 1.375,
+      "Moderately Active": 1.55,
+      "Very Active": 1.725,
+      "Super Active": 1.9,
+    };
+    let calories = bmr * activityLevels[activity];
+
+    // Goal adjustment
+    if (goal === "Lose Weight") calories -= 500;
+    if (goal === "Gain Weight") calories += 500;
+
+    // Macros (40% carbs, 30% protein, 30% fat)
+    const protein = Math.round((calories * 0.3) / 4);
+    const carbs = Math.round((calories * 0.4) / 4);
+    const fat = Math.round((calories * 0.3) / 9);
+
+    // Simple AI plan (placeholder)
+    const aiPlan = `
+🥗 **7-Day Diet Suggestion**
+Day 1: Scrambled eggs + spinach
+Day 2: Grilled chicken salad
+Day 3: Steamed veggies + tofu
+Day 4: Nuts + fruit snacks
+Day 5: Hydration: 8 glasses of water
+
+🏋️ **7-Day Workout Suggestion**
+Day 1: 30 min cardio + squats
+Day 2: HIIT + planks
+Day 3: Rest or yoga
+Day 4: Jump rope + push-ups
+Day 5: Cycling + crunches
+Day 6: Full-body circuit
+Day 7: Stretch + walk
+`;
+
+    setResult({
+      bmi,
+      category,
+      calories: Math.round(calories),
+      protein,
+      carbs,
+      fat,
+      aiPlan,
+    });
+  };
+
+  return (
+    <div style={{ padding: "20px", fontFamily: "Arial" }}>
+      <h1 style={{ textAlign: "center" }}>🏋️ Smart Fitness Planner</h1>
+
+      {/* Input fields */}
+      <div style={{ display: "flex", gap: "10px", marginBottom: "20px", textAlign: "center" }}>
+        <input
+          type="text"
+          placeholder="Name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
+
+        <input
+          type="number"
+          placeholder="Age"
+          value={age}
+          onChange={(e) => setAge(e.target.value)}
+          min="1"
+          max="120"
+        />
+
+        <input
+          type="number"
+          placeholder="Height (cm)"
+          value={height}
+          onChange={(e) => setHeight(e.target.value)}
+          min="50"
+          max="250"
+        />
+
+        <input
+          type="number"
+          placeholder="Weight (kg)"
+          value={weight}
+          onChange={(e) => setWeight(e.target.value)}
+          min="10"
+          max="300"
+        />
+
+        <select value={gender} onChange={(e) => setGender(e.target.value)}>
+          <option>Male</option>
+          <option>Female</option>
+        </select>
+
+        <select value={activity} onChange={(e) => setActivity(e.target.value)}>
+          <option>Sedentary</option>
+          <option>Lightly Active</option>
+          <option>Moderately Active</option>
+          <option>Very Active</option>
+          <option>Super Active</option>
+        </select>
+
+        <select value={goal} onChange={(e) => setGoal(e.target.value)}>
+          <option>Lose Weight</option>
+          <option>Maintain Weight</option>
+          <option>Gain Weight</option>
+        </select>
+
+        <button onClick={handleGeneratePlan}>💡 Generate My Plan</button>
+      </div>
+
+      {/* Results */}
+      <ResultCard result={result} />
     </div>
   );
 }
